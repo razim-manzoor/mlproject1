@@ -14,7 +14,7 @@ from src.utils import save_object
 
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file_path: str = os.path.join('artifacts', 'preprocessor.pkl')
+    preprocessor_obj_file_path: str = os.path.join("artifacts", "preprocessor.pkl")
 
 class DataTransformation:
     def __init__(self):
@@ -22,33 +22,27 @@ class DataTransformation:
 
     def get_data_transformer_object(self):
         """
-        Creates and returns a ColumnTransformer with pipelines for numerical and categorical features.
+        Create and return a ColumnTransformer for numerical and categorical features.
         """
         try:
             numerical_columns = ["writing_score", "reading_score"]
             categorical_columns = [
                 "gender",
-                "race_ethnicity",  # Must exactly match the CSV header
+                "race_ethnicity",  # Must match exactly with the CSV header
                 "parental_level_of_education",
                 "lunch",
                 "test_preparation_course"
             ]
-
-            # Pipeline for numerical features
             num_pipeline = Pipeline(steps=[
                 ("imputer", SimpleImputer(strategy="median")),
                 ("scaler", StandardScaler())
             ])
-            # Pipeline for categorical features
             cat_pipeline = Pipeline(steps=[
                 ("imputer", SimpleImputer(strategy="most_frequent")),
                 ("onehot", OneHotEncoder()),
-                # Set with_mean=False because OneHotEncoder returns sparse matrices by default.
                 ("scaler", StandardScaler(with_mean=False))
             ])
-
-            logging.info("Created numerical and categorical pipelines.")
-
+            logging.info("Numerical and categorical pipelines created.")
             preprocessor = ColumnTransformer(transformers=[
                 ("num_pipeline", num_pipeline, numerical_columns),
                 ("cat_pipeline", cat_pipeline, categorical_columns)
@@ -59,36 +53,32 @@ class DataTransformation:
 
     def initiate_data_transformation(self, train_path, test_path):
         """
-        Reads train and test data, applies the preprocessing pipeline, and saves the preprocessor object.
-        Returns the transformed train and test arrays along with the preprocessor file path.
+        Read train/test data, apply preprocessing, and save the preprocessor object.
+        Returns transformed arrays and the preprocessor file path.
         """
         try:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
-            logging.info("Train and test data loaded successfully.")
+            logging.info("Train and test data loaded.")
 
             preprocessor = self.get_data_transformer_object()
             target_column = "math_score"
 
-            # Separate features and target
             X_train = train_df.drop(columns=[target_column])
             y_train = train_df[target_column]
             X_test = test_df.drop(columns=[target_column])
             y_test = test_df[target_column]
-            logging.info("Features and target split completed.")
+            logging.info("Features and target separated.")
 
-            # Fit on training data and transform both training and testing data
             X_train_transformed = preprocessor.fit_transform(X_train)
             X_test_transformed = preprocessor.transform(X_test)
-            logging.info("Data transformation (fit/transform) completed.")
+            logging.info("Data transformation completed.")
 
-            # Combine transformed features with target
             train_arr = np.c_[X_train_transformed, y_train.to_numpy()]
             test_arr = np.c_[X_test_transformed, y_test.to_numpy()]
 
-            # Save the preprocessor object for future use
-            save_object(file_path=self.config.preprocessor_obj_file_path, obj=preprocessor)
-            logging.info("Preprocessor object saved successfully.")
+            save_object(self.config.preprocessor_obj_file_path, preprocessor)
+            logging.info("Preprocessor object saved.")
 
             return train_arr, test_arr, self.config.preprocessor_obj_file_path
         except Exception as e:

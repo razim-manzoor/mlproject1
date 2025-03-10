@@ -1,9 +1,8 @@
 import sys
-import traceback
 
 def error_message_detail(error, error_detail: sys):
     """
-    Extracts and formats error details from the exception traceback.
+    Extract and format error details from the exception traceback.
     """
     _, _, exc_tb = error_detail.exc_info()
     file_name = exc_tb.tb_frame.f_code.co_filename
@@ -12,7 +11,7 @@ def error_message_detail(error, error_detail: sys):
 
 class CustomException(Exception):
     """
-    Custom Exception class that formats error messages with detailed traceback info.
+    Custom Exception class that includes detailed error traceback info.
     """
     def __init__(self, error, error_detail: sys):
         super().__init__(error)
