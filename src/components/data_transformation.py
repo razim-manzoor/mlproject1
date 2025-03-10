@@ -7,7 +7,6 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
@@ -22,13 +21,13 @@ class DataTransformation:
 
     def get_data_transformer_object(self):
         """
-        Create and return a ColumnTransformer for numerical and categorical features.
+        Creates and returns a ColumnTransformer for numerical and categorical features.
         """
         try:
             numerical_columns = ["writing_score", "reading_score"]
             categorical_columns = [
                 "gender",
-                "race_ethnicity",  # Must match exactly with the CSV header
+                "race_ethnicity",
                 "parental_level_of_education",
                 "lunch",
                 "test_preparation_course"
@@ -53,7 +52,7 @@ class DataTransformation:
 
     def initiate_data_transformation(self, train_path, test_path):
         """
-        Read train/test data, apply preprocessing, and save the preprocessor object.
+        Loads train/test data, applies preprocessing, and saves the preprocessor.
         Returns transformed arrays and the preprocessor file path.
         """
         try:
@@ -64,19 +63,23 @@ class DataTransformation:
             preprocessor = self.get_data_transformer_object()
             target_column = "math_score"
 
+            # Separate features and target
             X_train = train_df.drop(columns=[target_column])
             y_train = train_df[target_column]
             X_test = test_df.drop(columns=[target_column])
             y_test = test_df[target_column]
             logging.info("Features and target separated.")
 
+            # Apply transformation
             X_train_transformed = preprocessor.fit_transform(X_train)
             X_test_transformed = preprocessor.transform(X_test)
             logging.info("Data transformation completed.")
 
+            # Combine transformed features with target column
             train_arr = np.c_[X_train_transformed, y_train.to_numpy()]
             test_arr = np.c_[X_test_transformed, y_test.to_numpy()]
 
+            # Save the preprocessor for future use
             save_object(self.config.preprocessor_obj_file_path, preprocessor)
             logging.info("Preprocessor object saved.")
 

@@ -3,7 +3,6 @@ import sys
 from dataclasses import dataclass
 import pandas as pd
 from sklearn.model_selection import train_test_split
-
 from src.exception import CustomException
 from src.logger import logging
 
@@ -19,19 +18,21 @@ class DataIngestion:
 
     def initiate_data_ingestion(self):
         """
-        Read raw data from a CSV, split into train/test sets, and save to disk.
+        Reads the raw CSV, splits it into train/test sets, and saves the outputs.
         """
         logging.info("Starting data ingestion process.")
         try:
-            # Adjust this path as needed; place your raw CSV file in the 'data' folder.
+            # Place your raw CSV (stud.csv) inside the data folder.
             data_path = os.path.join("data", "stud.csv")
             df = pd.read_csv(data_path)
             logging.info("Dataset loaded successfully.")
 
+            # Save the raw data
             os.makedirs(os.path.dirname(self.config.raw_data_path), exist_ok=True)
             df.to_csv(self.config.raw_data_path, index=False)
             logging.info("Raw data saved successfully.")
 
+            # Split the data into train and test sets
             train_set, test_set = train_test_split(df, test_size=0.2, random_state=42)
             train_set.to_csv(self.config.train_data_path, index=False)
             test_set.to_csv(self.config.test_data_path, index=False)

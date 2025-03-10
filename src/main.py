@@ -15,12 +15,12 @@ def main():
         train_arr, test_arr, preprocessor_path = transformation.initiate_data_transformation(train_path, test_path)
         logging.info("Data transformation completed successfully.")
 
-        # Model Training
+        # Model Training with Hyperparameter Tuning
         from src.components.model_trainer import ModelTrainer
         trainer = ModelTrainer()
         best_model_name, best_score, results, predictions = trainer.initiate_model_trainer(train_arr, test_arr, preprocessor_path)
         logging.info(f"Model training completed successfully. Best model: {best_model_name} with R²: {best_score:.4f}")
-        logging.info(f"Predictions on X_test: {predictions}")
+        logging.info(f"First 10 predictions on X_test: {predictions[:10]}")
 
     except Exception as e:
         logging.error(f"Pipeline failed: {e}")
