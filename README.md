@@ -67,5 +67,3 @@ This project demonstrates a complete end-to-end machine learning workflow:
 ![Screenshot](image.png)
 
 ---
-
-This project is designed with best practices in mind, making it a robust foundation for production deployment or discussion during interviews. Enjoy exploring and extending the project! 🎉
