@@ -1,4 +1,4 @@
-# My ML Project 🚀
+# Predict Math Score 🚀
 
 A production-ready machine learning pipeline that ingests, transforms, and trains a model on student performance data. This project also includes a Flask web application to serve predictions via a user-friendly interface.
 
@@ -64,9 +64,7 @@ This project demonstrates a complete end-to-end machine learning workflow:
 
 ## App Screenshot 🗺️
 
-*Include an architecture diagram here if available (e.g., `assets/architecture_diagram.png`).*
-
-![Screenshot](./assets/architecture_diagram.png)
+![Screenshot](image.png)
 
 ---
 
