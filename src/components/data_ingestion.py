@@ -17,26 +17,23 @@ class DataIngestion:
         self.config = DataIngestionConfig()
 
     def initiate_data_ingestion(self):
-        """
-        Reads the raw CSV, splits it into train/test sets, and saves the outputs.
-        """
-        logging.info("Starting data ingestion process.")
+        logging.info("Starting data ingestion.")
         try:
-            # Place your raw CSV (stud.csv) inside the data folder.
+            # Place your raw CSV file (stud.csv) in the data folder.
             data_path = os.path.join("data", "stud.csv")
             df = pd.read_csv(data_path)
-            logging.info("Dataset loaded successfully.")
+            logging.info("Dataset loaded.")
 
-            # Save the raw data
+            # Save raw data
             os.makedirs(os.path.dirname(self.config.raw_data_path), exist_ok=True)
             df.to_csv(self.config.raw_data_path, index=False)
-            logging.info("Raw data saved successfully.")
+            logging.info("Raw data saved.")
 
-            # Split the data into train and test sets
+            # Split data into train and test sets
             train_set, test_set = train_test_split(df, test_size=0.2, random_state=42)
             train_set.to_csv(self.config.train_data_path, index=False)
             test_set.to_csv(self.config.test_data_path, index=False)
-            logging.info("Train-test split completed and files saved.")
+            logging.info("Train-test split complete.")
 
             return self.config.train_data_path, self.config.test_data_path
 

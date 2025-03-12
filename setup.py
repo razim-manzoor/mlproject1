@@ -22,5 +22,12 @@ setup(
     author='Razim',
     author_email='razim.manz@gmail.com',
     packages=find_packages(),
-    install_requires=get_requirements('requirements.txt')
+    install_requires=get_requirements('requirements.txt'),
+    entry_points={
+        "console_scripts": [
+            "train_pipeline=train_pipeline:train_pipeline",
+            "predict_pipeline=predict_pipeline:predict"
+        ]
+    },
+    description="A machine learning pipeline project with Flask web app integration"
 )

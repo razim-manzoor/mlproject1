@@ -20,11 +20,10 @@ class DataTransformation:
         self.config = DataTransformationConfig()
 
     def get_data_transformer_object(self):
-        """
-        Creates and returns a ColumnTransformer for numerical and categorical features.
-        """
         try:
+            # Numerical features
             numerical_columns = ["writing_score", "reading_score"]
+            # Categorical features (must match CSV headers exactly)
             categorical_columns = [
                 "gender",
                 "race_ethnicity",
@@ -41,7 +40,7 @@ class DataTransformation:
                 ("onehot", OneHotEncoder()),
                 ("scaler", StandardScaler(with_mean=False))
             ])
-            logging.info("Numerical and categorical pipelines created.")
+            logging.info("Pipelines for numerical and categorical data created.")
             preprocessor = ColumnTransformer(transformers=[
                 ("num_pipeline", num_pipeline, numerical_columns),
                 ("cat_pipeline", cat_pipeline, categorical_columns)
@@ -51,10 +50,6 @@ class DataTransformation:
             raise CustomException(e, sys)
 
     def initiate_data_transformation(self, train_path, test_path):
-        """
-        Loads train/test data, applies preprocessing, and saves the preprocessor.
-        Returns transformed arrays and the preprocessor file path.
-        """
         try:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
@@ -70,18 +65,17 @@ class DataTransformation:
             y_test = test_df[target_column]
             logging.info("Features and target separated.")
 
-            # Apply transformation
+            # Transform the data
             X_train_transformed = preprocessor.fit_transform(X_train)
             X_test_transformed = preprocessor.transform(X_test)
-            logging.info("Data transformation completed.")
+            logging.info("Data transformation complete.")
 
-            # Combine transformed features with target column
             train_arr = np.c_[X_train_transformed, y_train.to_numpy()]
             test_arr = np.c_[X_test_transformed, y_test.to_numpy()]
 
-            # Save the preprocessor for future use
+            # Save the preprocessor
             save_object(self.config.preprocessor_obj_file_path, preprocessor)
-            logging.info("Preprocessor object saved.")
+            logging.info("Preprocessor saved.")
 
             return train_arr, test_arr, self.config.preprocessor_obj_file_path
         except Exception as e:

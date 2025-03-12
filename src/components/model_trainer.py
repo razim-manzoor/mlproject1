@@ -20,16 +20,10 @@ class ModelTrainer:
         self.config = ModelTrainerConfig()
 
     def initiate_model_trainer(self, train_array, test_array, preprocessor_path):
-        """
-        Trains, tunes, and evaluates regression models.
-        Returns the best model name, its R² score, evaluation results, and test predictions.
-        """
         try:
-            # Split training and test arrays into features and target
             X_train, y_train = train_array[:, :-1], train_array[:, -1]
             X_test, y_test = test_array[:, :-1], test_array[:, -1]
 
-            # Define models to evaluate
             models = {
                 "LinearRegression": LinearRegression(),
                 "KNeighborsRegressor": KNeighborsRegressor(),
@@ -41,9 +35,8 @@ class ModelTrainer:
                 "CatBoostRegressor": CatBoostRegressor(verbose=False, random_state=42)
             }
 
-            # Evaluate models and pick the best based on R² score
             results, best_model_name, best_model, best_score = evaluate_models(X_train, y_train, X_test, y_test, models)
-            logging.info(f"Initial best model: {best_model_name} with R² score: {best_score:.4f}")
+            logging.info(f"Initial best: {best_model_name} with R²: {best_score:.4f}")
 
             # Hyperparameter tuning for select models
             tuning_params = {
@@ -64,15 +57,14 @@ class ModelTrainer:
                 }
             }
 
-            # If best model is one we want to tune, perform hyperparameter tuning.
             if best_model_name in tuning_params:
-                logging.info(f"Starting hyperparameter tuning for {best_model_name}.")
+                logging.info(f"Tuning {best_model_name}.")
                 best_model_tuned, best_params, tuned_score = tune_model(best_model, tuning_params[best_model_name], X_train, y_train)
-                logging.info(f"Hyperparameter tuning completed. Best params: {best_params}, Best CV score: {tuned_score:.4f}")
-                tuned_predictions = best_model_tuned.predict(X_test)
+                logging.info(f"Tuned parameters: {best_params}, CV score: {tuned_score:.4f}")
                 from sklearn.metrics import r2_score
+                tuned_predictions = best_model_tuned.predict(X_test)
                 tuned_r2 = r2_score(y_test, tuned_predictions)
-                logging.info(f"Tuned model R² on test set: {tuned_r2:.4f}")
+                logging.info(f"Tuned model test R²: {tuned_r2:.4f}")
                 if tuned_r2 > best_score:
                     best_score = tuned_r2
                     best_model = best_model_tuned
@@ -82,13 +74,11 @@ class ModelTrainer:
             if best_score < 0.6:
                 raise CustomException("No model achieved acceptable performance.", sys)
 
-            # Save the best model
             save_object(self.config.trained_model_path, best_model)
-            logging.info("Best model saved successfully.")
+            logging.info("Best model saved.")
 
-            # Get predictions on test set
             predictions = best_model.predict(X_test)
-            logging.info(f"First 10 predictions on X_test: {predictions[:10]}")
+            logging.info(f"First 10 test predictions: {predictions[:10]}")
 
             return best_model_name, best_score, results, predictions
 

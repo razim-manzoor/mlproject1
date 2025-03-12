@@ -19,8 +19,8 @@ def main():
         from src.components.model_trainer import ModelTrainer
         trainer = ModelTrainer()
         best_model_name, best_score, results, predictions = trainer.initiate_model_trainer(train_arr, test_arr, preprocessor_path)
-        logging.info(f"Model training completed successfully. Best model: {best_model_name} with R²: {best_score:.4f}")
-        logging.info(f"First 10 predictions on X_test: {predictions[:10]}")
+        logging.info(f"Model training complete. Best model: {best_model_name} with R²: {best_score:.4f}")
+        logging.info(f"First 10 predictions on test set: {predictions[:10]}")
 
     except Exception as e:
         logging.error(f"Pipeline failed: {e}")
